@@ -2,7 +2,8 @@ const Discord = require("discord.js");
 const fs = require("fs");
 var safeEval = require("safe-eval");
 var config = fs.readFileSync("config.json");
-
+var isReady = true;
+var opus = require('opusscript');
 var cheerio = require("cheerio");
 var request = require("request");
 config = JSON.parse(config);
@@ -10,6 +11,7 @@ const client = new Discord.Client();
 const isSelfBot = false;
 const token = config.token;
 const selftoken = config.selftoken;
+const songs = ["./music/sico.mp3", "./music/mo.mp3"]
 const rsp8ball = [
   "It is certain",
   "It is decidedly so",
@@ -51,8 +53,8 @@ const helpEmbed = new Discord.RichEmbed()
     "Can do math and other things."
   )
   .addField(
-    "y!eval [statement to evaluate]",
-    "Can do math and other things."
+    "y!themesong",
+    "Plays either Mo Bamba or Sicko Mode"
   )
   .setTimestamp()
   .setFooter(
@@ -77,7 +79,19 @@ function handlemessage(message) {
     case "y!help":
       message.channel.send(helpEmbed);
       break;
-
+      case "y!themesong":
+      if (isReady){
+        var VC = message.member.voiceChannel;
+        if (!VC)
+            return message.reply("MESSAGE IF NOT IN A VOICE CHANNEL")
+    VC.join()
+        .then(connection => {
+            const dispatcher = connection.playFile(songs[Math.floor(Math.random() * songs.length)]);
+            dispatcher.on("end", end => {VC.leave()});
+        })
+        .catch(console.error);
+      }
+      break;
     default:
       if (message.content.startsWith("y!8ball")) {
         // magic 8 ball command
