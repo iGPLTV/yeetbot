@@ -2,6 +2,9 @@ const Discord = require("discord.js");
 const fs = require("fs");
 var safeEval = require("safe-eval");
 var config = fs.readFileSync("config.json");
+
+var cheerio = require("cheerio");
+var request = require("request");
 config = JSON.parse(config);
 const client = new Discord.Client();
 const isSelfBot = false;
@@ -42,7 +45,11 @@ const helpEmbed = new Discord.RichEmbed()
     "https://media1.tenor.com/images/1216e4ee9d73a197912077c5a832f3f2/tenor.gif"
   )
   .addField("y!ping", "Shows the bot's current ping.")
-  .addField("y!8ball [question]", "Ask the magic 8 ball a question.")
+  .addField("y!8ball [question]", "Ask The Magic 8-Ball a question.")
+  .addField(
+    "y!eval [statement to evaluate]",
+    "Can do math and other things."
+  )
   .addField(
     "y!eval [statement to evaluate]",
     "Can do math and other things."
@@ -70,6 +77,7 @@ function handlemessage(message) {
     case "y!help":
       message.channel.send(helpEmbed);
       break;
+
     default:
       if (message.content.startsWith("y!8ball")) {
         // magic 8 ball command
@@ -84,8 +92,7 @@ function handlemessage(message) {
             message.channel.send(safeEval(l_name));
           } catch (error) {
             try {
-              if (error.toString() == null) {
-              } else {
+              if (error.toString() == null) {} else {
                 message.channel.send(error.toString());
               }
             } catch (err) {
@@ -93,9 +100,15 @@ function handlemessage(message) {
             }
           }
         } else {
-          if (message.content.startsWith("y!")) {
-            message.channel.send("Error: Invalid Command");
+          if (message.content.startsWith("y!image")) {
+            var parts = message.content.split(" ");
+            image(message, parts);
+          } else {
+            if (message.content.startsWith("y!")) {
+              message.channel.send("Error: Invalid Command");
+            }
           }
+
         }
       }
   }
@@ -103,7 +116,31 @@ function handlemessage(message) {
 client.on("message", message => {
   handlemessage(message);
 });
-
+//NONE OF THIS IS SKIDDED I PROMISE
+function image(message, parts) {
+  var search = parts.slice(1).join(" ");
+  var options = {
+    url: "http://results.dogpile.com/serp?qc=images&q=" + search,
+    method: "GET",
+    headers: {
+      "Accept": "text/html",
+      "User-Agent": "Chrome/YeetBOT"
+    }
+  };
+  request(options, function(error, response, responseBody) {
+    if (error) {
+      return;
+    }
+    $ = cheerio.load(responseBody);
+    var links = $(".image a.link");
+    var urls = new Array(links.length).fill(1).map((v, i) => links.eq(i).attr("href"));
+    if (!urls.length) {
+      return;
+    }
+    message.channel.send(urls[Math.floor(Math.random() * urls.length)]);
+  });
+}
+ client.on('error', console.error);
 client.login(token);
 
 //deprecated stuff
