@@ -12,7 +12,11 @@ const client = new Discord.Client();
 const isSelfBot = false;
 const token = config.token;
 const selftoken = config.selftoken;
-const songs = ["./music/sico.mp3", "./music/mo.mp3", "./music/shark.mp3"]
+const songs = [
+ "./music/sico.mp3",
+ "./music/mo.mp3",
+ "./music/shark.mp3"
+];
 const rsp8ball = [
   "It is certain",
   "It is decidedly so",
@@ -81,7 +85,7 @@ function handlemessage(message) {
       message.author.send(helpEmbed);
       message.channel.send('Command list was sent to your dms.')
       break;
-      case "y!sickobamba":
+    case "y!sickobamba":
 
       break;
     default:
@@ -111,49 +115,51 @@ function handlemessage(message) {
             image(message, parts);
           } else {
             if (message.content.startsWith("y!sickobamba")) {
-              if (isReady){
+              if (isReady) {
                 VC = message.member.voiceChannel;
                 if (!VC)
-                    return message.reply("MESSAGE IF NOT IN A VOICE CHANNEL")
-            VC.join()
-                .then(connection => {
-                  var parts = message.content.split(" ");
-                  var search = parts.slice(1).join(" ");
-                  if (search.toLowerCase() == "sicko mode"){
-const dispatcher = connection.playFile(songs[0]);
-                  }else{
-                    if (search.toLowerCase() == "mo bamba"){
-const dispatcher = connection.playFile(songs[1]);
-                    }else{
-                      if (search.toLowerCase() == "baby shark"){
-  const dispatcher = connection.playFile(songs[2]);
-                      }else{
-  message.reply("Not a valid option. Try Sicko Mode, Mo Bamba or baby shark.")
+                  return message.reply("MESSAGE IF NOT IN A VOICE CHANNEL")
+                VC.join()
+                  .then(connection => {
+                    var parts = message.content.split(" ");
+                    var search = parts.slice(1).join(" ");
+                    if (search.toLowerCase() == "sicko mode") {
+                      const dispatcher = connection.playFile(songs[0]);
+                    } else {
+                      if (search.toLowerCase() == "mo bamba") {
+                        const dispatcher = connection.playFile(songs[1]);
+                      } else {
+                        if (search.toLowerCase() == "baby shark") {
+                          const dispatcher = connection.playFile(songs[2]);
+                        } else {
+                          message.reply("Not a valid option. Try Sicko Mode, Mo Bamba or baby shark.")
+                        }
+
                       }
-
                     }
-                  }
 
-                    dispatcher.on("end", end => {VC.leave()});
-                })
-                .catch(console.error);
+                    dispatcher.on("end", end => {
+                      VC.leave()
+                    });
+                  })
+                  .catch(console.error);
               }
-            }else{
+            } else {
               if (message.content.startsWith("y!disconnect")) {
-                try{
+                try {
                   VC.leave();
                 } catch (err) {
                   console.log(err);
                 }
 
-              }else{
+              } else {
                 if (message.content.startsWith("y!")) {
                   message.channel.send("Error: Invalid Command");
                 }
               }
 
 
-          }
+            }
           }
 
         }
@@ -187,7 +193,7 @@ function image(message, parts) {
     message.channel.send(urls[Math.floor(Math.random() * urls.length)]);
   });
 }
- client.on('error', console.error);
+client.on('error', console.error);
 client.login(token);
 
 //deprecated stuff
