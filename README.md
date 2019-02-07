@@ -1,2 +1,3 @@
-# HELLO
-THERE IS ME
+# Gamer
+THERE IS ONLY YEET
+a discord bot by Talll
